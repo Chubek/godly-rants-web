@@ -1,32 +1,75 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+
+  <v-app>
+      <div>
+         
+    <v-app-bar
+      color="primary"
+      dark
+    >
+      <v-app-bar-nav-icon 
+      class="hidden-md-and-up"
+      @click.stop="sideNav = !sideNav"></v-app-bar-nav-icon>
+
+      <v-toolbar-title>Page title</v-toolbar-title>
+
+      <v-spacer></v-spacer>
+
+      <v-btn icon>
+        <v-icon>mdi-heart</v-icon>
+      </v-btn>
+
+      <v-btn icon>
+        <v-icon>mdi-magnify</v-icon>
+      </v-btn>
+
+      <v-menu
+        left
+        bottom
+      >
+               
+      </v-menu>
+    </v-app-bar>
+    <v-navigation-drawer temporary v-model="sideNav">
+          <v-list>
+            <v-list-item>
+              <v-list-content>
+                Item 1
+              </v-list-content>
+            </v-list-item>
+            <v-list-item>
+              <v-list-content>
+                Item 2
+              </v-list-content>
+            </v-list-item>
+          </v-list>
+           
+    </v-navigation-drawer>
   </div>
+    
+  </v-app>
 </template>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
 
-#nav {
-  padding: 30px;
-}
 
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
+export default {
+  name: 'App',
 
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+  components: {
+    
+  },
+
+  data: () => ({
+    sideNav: false
+  }),
+  computed: {
+    
+  },
+  methods: {
+    
+    
+  }
+
+};
+</script>
