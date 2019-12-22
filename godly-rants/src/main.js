@@ -6,7 +6,7 @@ import vuetify from './plugins/vuetify';
 import firebase from 'firebase'
 import 'firebase/firestore'
 import { getImages } from './image_fetcher'
-
+import RegisterView from './views/RegisterView.vue'
 
 Vue.config.productionTip = false
 
@@ -32,6 +32,6 @@ new Vue({
     console.log(arr)
   },
   components: {
-    
+    RegisterView
   }
 }).$mount('#app')

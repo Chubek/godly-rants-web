@@ -6,6 +6,7 @@
 import Register from '../components/User/Register'
 
 export default {
+    name: 'registerView',
     components: {
         Register
     }

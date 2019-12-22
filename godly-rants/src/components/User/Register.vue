@@ -1,11 +1,13 @@
 <template>
-      <v-form
+      
+          <v-container grid-list-xs>
+              <v-form
     ref="form"
     v-model="valid"
     lazy-validation
   >
     <v-text-field
-      v-model="name"
+      v-model="displayName"
       :counter="10"
       :rules="nameRules"
       label="Display Name"
@@ -15,6 +17,7 @@
     <v-text-field
       v-model="email"
       :rules="emailRules"
+      type="email"
       label="E-mail"
       required
     ></v-text-field>
@@ -23,12 +26,14 @@
       v-model="password"      
       :rules="[v => !!v || 'Password is required']"
       label="Password"
+      type="password"
       required
     ></v-text-field>
 
     <v-text-field
       v-model="confirmPassword"      
-      :rules="[v => v != password || 'Passwords do not match']"
+      :rules="[v => v == this.password || 'Passwords do not match']"
+      type="password"
       label="Confirm Password"
       required
     ></v-text-field>
@@ -44,10 +49,13 @@
     </v-btn>
 
    </v-form>
+              
+          </v-container>
+      
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+
 
 export default {
     name: "Register",
@@ -72,15 +80,16 @@ export default {
         }
       },
 
-      onCreateUser(user) {
-          user.displayName = this.displayName
-          user.email = this.email
-          user.password = this.password
+      onCreateUser() {
+          this.$store.dispatch('addUser', {
+              displayName: this.displayName,
+              email: this.email,
+              password: this.password
+          })
+            .catch(e => console.log(e))
       },
 
-    ...mapActions({
-       onCreateUser: 'addUser'
-    })
+    
 
     }
     

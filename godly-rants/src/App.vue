@@ -45,8 +45,9 @@
           </v-list>
            
     </v-navigation-drawer>
-  </div>
     
+  </div>
+    <router-view></router-view>
   </v-app>
 </template>
 
