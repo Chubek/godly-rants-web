@@ -7,6 +7,7 @@ import firebase from 'firebase'
 import 'firebase/firestore'
 import { getImages } from './image_fetcher'
 
+
 Vue.config.productionTip = false
 
 new Vue({
@@ -30,4 +31,7 @@ new Vue({
     let arr = getImages("I love my mom!")    
     console.log(arr)
   },
+  components: {
+    
+  }
 }).$mount('#app')

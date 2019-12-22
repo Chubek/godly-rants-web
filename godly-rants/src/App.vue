@@ -11,13 +11,13 @@
       class="hidden-md-and-up"
       @click.stop="sideNav = !sideNav"></v-app-bar-nav-icon>
 
-      <v-toolbar-title>Page title</v-toolbar-title>
+      <v-toolbar-title>{{ siteTitle }}</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
-      <v-btn icon>
-        <v-icon>mdi-heart</v-icon>
-      </v-btn>
+     
+        <router-link to="/register" style="cursor: pointer" color="black">Register</router-link>
+      
 
       <v-btn icon>
         <v-icon>mdi-magnify</v-icon>
@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 
 
 export default {
@@ -64,7 +65,9 @@ export default {
     sideNav: false
   }),
   computed: {
-    
+    ...mapState({
+      siteTitle: state => state.siteTitle,
+    })
   },
   methods: {
     
