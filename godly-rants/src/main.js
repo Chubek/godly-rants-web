@@ -17,7 +17,7 @@ new Vue({
   render: h => h(App),
   created() {
     firebase.initializeApp({
-      apiKey: "AIzaSyAEswQtXp0xOBccjQXmfTXcc8excqnysdU",
+      apiKey: "",
       authDomain: "godly-rants.firebaseapp.com",
       databaseURL: "https://godly-rants.firebaseio.com",
       projectId: "godly-rants",
