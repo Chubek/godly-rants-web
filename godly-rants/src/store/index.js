@@ -25,11 +25,14 @@ export default new Vuex.Store({
     loginWarning: null,
     loginWarningVisible: false,
 
+    userLoggedIn: false,
+
   },
   mutations: {
     SET_CURRENT_USER(state, user) {
       state.currentUser.displayName = user.displayName
       state.currentUser.role = user.role
+      state.userLoggedIn = true
 
     },
 
@@ -127,6 +130,9 @@ export default new Vuex.Store({
     },
     getLoginWarningVisible: state => {
       return state.loginWarningVisible
+    },
+    getUserLoggedIn: state => {
+      return state.userLoggedIn
     }
 
   },

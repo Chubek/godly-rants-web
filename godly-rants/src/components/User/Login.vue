@@ -4,6 +4,11 @@
             <v-alert type="error" :value="warningVisible">
       {{ warning }}
     </v-alert>
+
+    
+    <v-alert type="info" :value="infoVisible">
+      {{ info }}
+    </v-alert>
               <v-form
     ref="form"
     v-model="valid"
@@ -50,25 +55,49 @@ export default {
     data: () => ({
         valid: true,
         email: '',
-        password: '',        
+        password: '',     
+        infoVisible: false,
+        info: ''   
     }),
 
     methods: {
         onLogin() {
-            this.$store.dispatch("userLogin", {
+            if (this.loggedIn == false) {
+                this.$store.dispatch("userLogin", {
                 email: this.email,
                 password: this.password
             })
                 .catch(e => this.warning = e.message)
+            } else {
+                this.infoVisible = true
+                this.info = "User already logged in."
+                console.log("User already logged in.")
+            }
+
         }
     },
 
     computed: {
         ...mapGetters({
             warning: 'getLoginWarning',
-            warningVisible: 'getLoginWarningVisible'
+            warningVisible: 'getLoginWarningVisible',
+            loggedIn: 'getUserLoggedIn'
         })
 
+    },
+
+    watch: {
+
+        loggedIn(newVal) {
+            console.log(newVal)
+
+            this.$router.push({path: "/"})
+
+        }
+
+
+
+          
     }
 
 }
