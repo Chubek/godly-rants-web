@@ -1,6 +1,9 @@
 <template>
       
           <v-container grid-list-xs>
+            <v-alert type="error" :value="warningVisible">
+      {{ warning }}
+    </v-alert>
               <v-form
     ref="form"
     v-model="valid"
@@ -55,11 +58,11 @@
 </template>
 
 <script>
-
+import { mapGetters } from 'vuex'
 
 export default {
     name: "Register",
-    data: () => ({
+    data: () => ({               
       valid: true,
       displayName: '',
       nameRules: [
@@ -91,8 +94,15 @@ export default {
 
     
 
-    }
-    
+    },
+    computed: {
+      ...mapGetters({
+        warning: 'getRegisterWarning',
+        warningVisible: 'getWarningVisible'
+      })
+    },
+
+      
     
 }
 </script>
