@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LoginView from '../views/LoginView.vue'
+import AuthGuard from './auth_guard'
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -19,7 +21,18 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: LoginView
+    component: LoginView   
+
+  },
+  {
+    path: "/rants/create",
+    name: "create_rant",
+    beforeEnter: AuthGuard
+  },
+  {
+    path: "profile/:uid",
+    name: "profile",
+    beforeEnter: AuthGuard
   },
   {
     path: '/about',

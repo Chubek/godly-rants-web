@@ -13,6 +13,7 @@ export default new Vuex.Store({
     siteTitle: "Godly Rants",
     userInfo: {
       displayName: null, 
+      uid: null,
       email: null      
     },
     currentUser: {
@@ -27,10 +28,19 @@ export default new Vuex.Store({
 
     userLoggedIn: false,
 
+    rants: {
+      uid: null,
+      submitter: null,
+      time: null,
+      title: null,
+      content: null
+    }
+
   },
   mutations: {
     SET_CURRENT_USER(state, user) {
       state.currentUser.displayName = user.displayName
+      state.currentUser.uid = user.uid
       state.currentUser.role = user.role
       state.userLoggedIn = true
 
@@ -57,17 +67,37 @@ export default new Vuex.Store({
     
     addUser({commit}, user) {
       
+      let userExists = false
+      db.collection('users').where("displayName", "==", user.displayName).get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            if (doc.data().displayName == user.displayName) {
+              
+              userExists = true
 
-      db.collection('users')
-        .get()
-          .then(snapshop => {
-            snapshop.forEach(doc => {
-              if (doc.data().displayName == user.displayName) {
-                commit("RGISTER_WARNING", "This display name is already taken.")
-              }
-            })
+              console.log(userExists)
+            }
           })
-            .catch(e => console.log(e))
+        })
+
+        if (userExists) {
+          db.collection('users').add({
+            displayName: user.displayName,
+            email: user.email,
+            role: "Regular"
+          })
+            .then(ref => console.log(`Document written with id: ${ref.id}`))
+              .catch(e => commit("REGISTER_WARNING", e.message))
+        } else {
+          commit("REGISTER_WARNING", "This username already exists.")
+        }
+        
+            
+
+
+         
+
+           
 
                          
                           
@@ -89,11 +119,16 @@ export default new Vuex.Store({
     db.collection("users").where("email", "==", user.email).get()
       .then(snapshot => {
         snapshot.forEach(doc => {
+          let userData = doc.data()
+          let id = doc.id
           commit("SET_CURRENT_USER", {
-            displayName: doc.displayName,
-            role: doc.role
+            displayName: userData.displayName,
+            uid: id,
+            role: userData.role
           })
         })
+      
+   
       })
           .catch(e => {
             commit("LOGIN_WARNING", e.message)
@@ -115,6 +150,9 @@ export default new Vuex.Store({
   getters: {
     getUserName: state => {
       return state.currentUser.displayName
+    },
+    getUserUID: state => {
+      return state.currentUser.uid
     },
     getUserRole: state => {
       return state.currentUser.role
@@ -139,3 +177,4 @@ export default new Vuex.Store({
   modules: {
   }
 })
+
