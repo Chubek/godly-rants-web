@@ -16,6 +16,7 @@ export default new Vuex.Store({
       uid: null,
       email: null      
     },
+    userBio: null,
     currentUser: {
       displayName: null,
       role: null
@@ -59,6 +60,10 @@ export default new Vuex.Store({
     LOGIN_WARNING(state, warning) {
       state.loginWarning = warning
       state.loginWarningVisible = true
+    },
+
+    SET_USER_BIO(state, bio) {
+      state.userBio = bio
     }
 
  
@@ -178,6 +183,10 @@ export default new Vuex.Store({
 
 
 
+  },
+
+  setUserBio({commit}, bio) {
+    commit("SET_USER_BIO", bio)
   }
 
 
@@ -209,6 +218,9 @@ export default new Vuex.Store({
     },
     getUserLoggedIn: state => {
       return state.userLoggedIn
+    },
+    getUserBio: state => {
+      return state.userBio
     }
 
   },

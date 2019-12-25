@@ -17,7 +17,7 @@
       <v-spacer></v-spacer>
 
      
-        <router-link to="/register" style="cursor: pointer" color="black">Register</router-link>
+        <router-link to="/profile" style="cursor: pointer" color="black">Register</router-link>
       
 
       <v-btn icon>
