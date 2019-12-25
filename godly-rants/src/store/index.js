@@ -112,11 +112,11 @@ export default new Vuex.Store({
    userLogin({commit}, user) {
 
 
-    firebase.auth().signInWithEmailAndPassword(user.email, user.password)
-    .catch(e => commit("LOGIN_WARNING", e.message))
-
-
-    db.collection("users").where("email", "==", user.email).get()
+    firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        firebase.auth().signInWithEmailAndPassword(user.email, user.password)
+        
+        db.collection("users").where("email", "==", user.email).get()
       .then(snapshot => {
         snapshot.forEach(doc => {
           let userData = doc.data()
@@ -134,6 +134,16 @@ export default new Vuex.Store({
             commit("LOGIN_WARNING", e.message)
           })
 
+    .catch(e => commit("LOGIN_WARNING", e.message))
+      })
+        .catch(e => commit("LOGIN_WARNING", e.message))
+
+
+    
+
+
+    
+
 
       
 
@@ -141,6 +151,34 @@ export default new Vuex.Store({
           
           
 },
+
+  reLogin() {
+
+    let userEmail
+
+    firebase.auth().onAuthStateChanged(user => {
+        userEmail = user.email
+        db.collection('users').where("email", "==", userEmail).get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            console.log(userEmail)
+            let data = doc.data()
+            let id = doc.id
+            this.commit("SET_CURRENT_USER", {
+              displayName: data.displayName,
+              erole: data.role,
+              uid: id
+            })
+          })
+        })
+        
+    })
+
+ 
+
+
+
+  }
 
 
    

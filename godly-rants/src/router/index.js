@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LoginView from '../views/LoginView.vue'
 import AuthGuard from './auth_guard'
+import ProfileView from '../views/ProfileView.vue'
 
 Vue.use(VueRouter)
 
@@ -30,8 +31,9 @@ const routes = [
     beforeEnter: AuthGuard
   },
   {
-    path: "profile/:uid",
+    path: "/profile",
     name: "profile",
+    component: ProfileView,
     beforeEnter: AuthGuard
   },
   {

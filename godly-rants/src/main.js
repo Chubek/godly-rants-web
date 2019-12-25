@@ -8,13 +8,15 @@ import RegisterView from './views/RegisterView.vue'
 
 Vue.config.productionTip = false
 
+
+ 
 new Vue({
   router,
   store,
   vuetify,
   render: h => h(App),
   created() {
-    
+    store.dispatch('reLogin')
     
     let arr = getImages("I love my mom!")    
     console.log(arr)

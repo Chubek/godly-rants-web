@@ -1,6 +1,7 @@
 <template>
 
   <v-app>
+    Welcome {{ displayName }}
       <div>
          
     <v-app-bar
@@ -53,7 +54,7 @@
 
 <script>
 import { mapState } from 'vuex'
-
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'App',
@@ -68,6 +69,9 @@ export default {
   computed: {
     ...mapState({
       siteTitle: state => state.siteTitle,
+    }),
+    ...mapGetters({
+      displayName: 'getUserName'
     })
   },
   methods: {
