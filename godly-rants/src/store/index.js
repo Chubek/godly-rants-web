@@ -31,7 +31,8 @@ export default new Vuex.Store({
       time: null,
       title: null,
       content: null,
-      tags: []
+      tags: [],
+      image: null,
     },
 
   },
@@ -71,6 +72,7 @@ export default new Vuex.Store({
       state.rant.time = rant.time
       state.rant.submitter_name = rant.submitter_name
       state.rant.submitter_id = rant.submitter_id
+      state.rant.image = rant.image
     }
 
  
@@ -184,7 +186,8 @@ export default new Vuex.Store({
             time: rant.time,
             submitter_name: this.state.currentUser.uid,
             submitter_id: this.state.currentUser.uid,
-            tags: rant.tags.split(",")
+            tags: rant.tags.split(","),
+            image: rant.image
 
         })
           .then(res=> {
@@ -195,7 +198,8 @@ export default new Vuex.Store({
               time: rant.time,
               submitter_name: this.state.currentUser.uid,
               submitter_id: this.state.currentUser.uid,
-              tags: rant.tags
+              tags: rant.tags,
+              image: rant.image
             })
           })
               .catch(e => console.log(e))
@@ -214,7 +218,8 @@ export default new Vuex.Store({
               content: data.content,
               title: data.title,
               time: data.time,
-              tags: data.tags.split(",")
+              tags: data.tags.split(","),
+              image: data.image
             })
           })
           .catch(e => console.log(e)) 
