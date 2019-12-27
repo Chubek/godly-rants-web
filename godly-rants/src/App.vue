@@ -17,7 +17,7 @@
       <v-spacer></v-spacer>
 
      
-        <router-link to="/profile" style="cursor: pointer" color="black">Register</router-link>
+        <router-link :to="{path: '/profile/' + this.uid}" style="cursor: pointer" color="black">Register</router-link>
       
 
       <v-btn icon>
@@ -71,7 +71,8 @@ export default {
       siteTitle: state => state.siteTitle,
     }),
     ...mapGetters({
-      displayName: 'getUserName'
+      displayName: 'getUserName',
+      uid: 'getUserUID'
     })
   },
   methods: {

@@ -11,15 +11,10 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     siteTitle: "Godly Rants",
-    userInfo: {
-      displayName: null, 
-      uid: null,
-      email: null      
-    },
-    userBio: null,
     currentUser: {
       displayName: null,
-      role: null
+      role: null,
+      bio: null
     },
     registerWarning: null,
     warningVisible: false,
@@ -29,13 +24,15 @@ export default new Vuex.Store({
 
     userLoggedIn: false,
 
-    rants: {
+    rant: {
       uid: null,
-      submitter: null,
+      submitter_name: null,
+      submitter_id: null,
       time: null,
       title: null,
-      content: null
-    }
+      content: null,
+      tags: []
+    },
 
   },
   mutations: {
@@ -43,6 +40,7 @@ export default new Vuex.Store({
       state.currentUser.displayName = user.displayName
       state.currentUser.uid = user.uid
       state.currentUser.role = user.role
+      state.currentUser.bio = user.bio
       state.userLoggedIn = true
 
     },
@@ -61,9 +59,18 @@ export default new Vuex.Store({
       state.loginWarning = warning
       state.loginWarningVisible = true
     },
+    SET_BIO(state, bio) {
+      state.currentUser.bio = bio
+    },
 
-    SET_USER_BIO(state, bio) {
-      state.userBio = bio
+    POST_RANT(state, rant) {
+      state.rant.uid = rant.uid
+      state.rant.title = rant.title
+      state.rant.content = rant.content
+      state.rant.tags = rant.tags
+      state.rant.time = rant.time
+      state.rant.submitter_name = rant.submitter_name
+      state.rant.submitter_id = rant.submitter_id
     }
 
  
@@ -116,7 +123,6 @@ export default new Vuex.Store({
 
    userLogin({commit}, user) {
 
-
     firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL)
       .then(() => {
         firebase.auth().signInWithEmailAndPassword(user.email, user.password)
@@ -129,7 +135,8 @@ export default new Vuex.Store({
           commit("SET_CURRENT_USER", {
             displayName: userData.displayName,
             uid: id,
-            role: userData.role
+            role: userData.role,
+            bio: userData.bio
           })
         })
       
@@ -141,59 +148,83 @@ export default new Vuex.Store({
 
     .catch(e => commit("LOGIN_WARNING", e.message))
       })
-        .catch(e => commit("LOGIN_WARNING", e.message))
-
-
-    
-
-
-    
-
-
-      
-
-
-          
+        .catch(e => commit("LOGIN_WARNING", e.message))      
           
 },
 
-  reLogin() {
 
-    let userEmail
+      reLogin({commit}) {
+        firebase.auth().onAuthStateChanged(user => {
+          db.collection("users").where("email", "==", user.email)
+              .get()
+                   .then(snapshot => {
+                     snapshot.forEach(doc => {
+                       let data = doc.data(); 
+                       let id = doc.id; 
+                       commit("SET_CURRENT_USER", {
+                         displayName: data.displayName, 
+                         uid: id,
+                          role: data.role, 
+                          bio: data.bio})})})
+        })
+      },
 
-    firebase.auth().onAuthStateChanged(user => {
-        userEmail = user.email
-        db.collection('users').where("email", "==", userEmail).get()
-        .then(snapshot => {
-          snapshot.forEach(doc => {
-            console.log(userEmail)
-            let data = doc.data()
-            let id = doc.id
-            this.commit("SET_CURRENT_USER", {
-              displayName: data.displayName,
-              erole: data.role,
-              uid: id
+      editBio({commit}, newBio) {
+        commit("SET_BIO", newBio)
+        db.collection("users").doc(this.state.currentUser.uid).update({
+          "bio": newBio
+        })
+          .catch(e => console.log(e))
+      },
+
+      submitRant({commit}, rant) {
+        db.collection("rants").add({
+            title: rant.title,
+            content: rant.content,
+            time: rant.time,
+            submitter_name: this.state.currentUser.uid,
+            submitter_id: this.state.currentUser.uid,
+            tags: rant.tags.split(",")
+
+        })
+          .then(res=> {
+            commit("POST_RANT", {
+              uid: res.id,
+              title: rant.title,
+              content: rant.content,
+              time: rant.time,
+              submitter_name: this.state.currentUser.uid,
+              submitter_id: this.state.currentUser.uid,
+              tags: rant.tags
             })
           })
-        })
-        
-    })
+              .catch(e => console.log(e))
 
- 
+      },
+
+      loadRant({commit}, id) {
+        db.collection('rants').doc(id).get()
+          .then(doc => {
+            console.log(doc)
+            let data = doc.data()
+            commit("POST_RANT", {
+              uid: id,
+              submitter_id: data.submitter_id,
+              submitter_name: data.submitter_name,
+              content: data.content,
+              title: data.title,
+              time: data.time,
+              tags: data.tags.split(",")
+            })
+          })
+          .catch(e => console.log(e)) 
+            
+          
+      }
 
 
 
-  },
-
-  setUserBio({commit}, bio) {
-    commit("SET_USER_BIO", bio)
-  }
-
-
-   
-
-
-  },
+},
   getters: {
     getUserName: state => {
       return state.currentUser.displayName
@@ -220,7 +251,10 @@ export default new Vuex.Store({
       return state.userLoggedIn
     },
     getUserBio: state => {
-      return state.userBio
+      return state.currentUser.bio
+    },
+    getSingleRant: state => {
+      return state.rant
     }
 
   },

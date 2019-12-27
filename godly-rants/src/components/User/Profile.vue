@@ -4,7 +4,7 @@
             <v-card>
                 <v-card-title>Chubak</v-card-title>
                 <v-card-subtitle>Administrator</v-card-subtitle>
-                <v-card-text>I'm a little teapot short and stouth .here's my handle here's my spot.</v-card-text>
+                <v-card-text>{{ bio }}</v-card-text>
                 <v-card-action> <v-dialog
       v-model="dialog"
       width="500"
@@ -22,7 +22,7 @@
                    <v-textarea
           name="input-7-1"
           label="Bio"
-          v-model="bio"
+          v-model="newBio"
           hint="Tell us a little about yourself."
         ></v-textarea>
              </v-card-text>
@@ -45,11 +45,27 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
   export default {
     data () {
       return {
         dialog: false,
+        newBio: null
+        
       }
     },
+
+    methods: {
+        onBioChanged() {
+            this.$store.dispatch("editBio", this.newBio)
+            this.dialog = false
+        }
+    },
+    computed: {
+        ...mapGetters({
+            bio: 'getUserBio'
+        })
+    }
+
   }
 </script>

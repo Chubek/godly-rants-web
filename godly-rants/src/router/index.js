@@ -5,6 +5,7 @@ import RegisterView from '../views/RegisterView.vue'
 import LoginView from '../views/LoginView.vue'
 import AuthGuard from './auth_guard'
 import ProfileView from '../views/ProfileView.vue'
+import RantView from '../views/RantView.vue'
 
 Vue.use(VueRouter)
 
@@ -31,10 +32,15 @@ const routes = [
     beforeEnter: AuthGuard
   },
   {
-    path: "/profile",
+    path: "/profile/:id",
     name: "profile",
     component: ProfileView,
     beforeEnter: AuthGuard
+  },
+  {
+    path: "/rant/:id",
+    name: "rant",
+    component: RantView
   },
   {
     path: '/about',
