@@ -1,6 +1,7 @@
 <template>
-     <v-row align="center" justify="center">
-    <v-sheet color="white lighten-2" class="pa-10 elevation-5">
+     <v-row align="top" justify="center">
+         <v-flex>
+             <v-sheet color="white lighten-1" class="pa-10 elevation-3">
          
                <v-img :aspect-ratio="1" :src="rant.image"
         max-width="350"
@@ -16,6 +17,8 @@
         <h5 class="font-weight-thin">{{ time }}</h5>
         <v-divider></v-divider>
         <div class="font-weight-light">{{ rant.content }}</div></v-sheet>
+         </v-flex>
+    
   
   </v-row>
     

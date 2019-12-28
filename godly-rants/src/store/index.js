@@ -35,6 +35,23 @@ export default new Vuex.Store({
       image: null,
     },
 
+    parentComment: {
+      uid: null,
+      parent_post_uid: null,
+      submitter_name: null,
+      submitter_uid: null,
+      time: null,
+      content: null,
+    },
+    childComment: {
+      uid: null,
+      parent_comment_uid: null,
+      submitter_name: null,
+      submitter_uid: null,
+      time: null,
+      content: null,
+    }
+
   },
   mutations: {
     SET_CURRENT_USER(state, user) {
@@ -73,6 +90,25 @@ export default new Vuex.Store({
       state.rant.submitter_name = rant.submitter_name
       state.rant.submitter_id = rant.submitter_id
       state.rant.image = rant.image
+    }, 
+
+    sOST_PARENT_COMMENT(state, comment) {
+      state.comment.uid = comment.uid
+      state.comment.parent_post_uid = comment.parent_post_uid
+      state.comment.submitter_id = comment.submitter_id
+      state.comment.submitter_name = comment.submitter_name
+      state.comment.time = comment.time
+      state.comment.content = comment.content
+    },
+
+    POST_CHILD_COMMENT(state, comment) {
+      state.childComment.uid = comment.uid
+      state.childComment.parent_comment_uid = comment.parent_comment_uid
+      state.childComment.submitter_id = comment.submitter_id
+      state.childComment.submitter_name = comment.submitter_name
+      state.childComment.time = comment.time
+      state.childComment.content = comment.content
+
     }
 
  
@@ -225,6 +261,51 @@ export default new Vuex.Store({
           .catch(e => console.log(e)) 
             
           
+      },
+
+      postParentComment({commit}, comment) {
+        db.collection("comments.parents").add(
+          {
+            parent_post_uid: comment.parent_post_uid,
+            submitter_id: comment.submitter_uid,
+            submitter_name: comment.submitter_name,
+            time: comment.time,
+            content: comment.content
+          }
+        )
+          .then(res => {
+            commit("POST_PARENT_COMMENT", 
+            {
+              uid: res.id,
+              parent_post_uid: comment.parent_post_uid,
+              submitter_id: comment.submitter_uid,
+              submitter_name: comment.submitter_name,
+              time: comment.time,
+              content: comment.content
+            })
+          })
+      },
+      postChildComment({commit}, comment) {
+        db.collection("comments.parents").add(
+          {
+            parent_comment_uid: comment.parent_comment_uid,
+            submitter_id: comment.submitter_uid,
+            submitter_name: comment.submitter_name,
+            time: comment.time,
+            content: comment.content
+          }
+        )
+          .then(res => {
+            commit("POST_PARENT_COMMENT", 
+            {
+              uid: res.id,
+              parent_comment_uid: comment.parent_comment_uid,
+              submitter_id: comment.submitter_uid,
+              submitter_name: comment.submitter_name,
+              time: comment.time,
+              content: comment.content
+            })
+          })
       }
 
 
