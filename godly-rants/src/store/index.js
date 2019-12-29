@@ -35,23 +35,35 @@ export default new Vuex.Store({
       image: null,
     },
 
-    parentComment: {
+    comments: [{
       uid: null,
       parent_post_uid: null,
       submitter_name: null,
       submitter_uid: null,
       time: null,
-      content: null,
-    },
-    childComment: {
+      content: null      
+    }],
+
+    childComments: [{
       uid: null,
       parent_comment_uid: null,
       submitter_name: null,
       submitter_uid: null,
       time: null,
-      content: null,
-    }
+      content: null      
+    }],
+   
+    rantParentComments: {
+      rant_uid: null,
+      rant_parent_comments: []
+    },
 
+    postChildrenComments: [{
+      comment_uid: null,
+      child_comments: []
+    }],
+
+   
   },
   mutations: {
     SET_CURRENT_USER(state, user) {
@@ -92,25 +104,41 @@ export default new Vuex.Store({
       state.rant.image = rant.image
     }, 
 
-    sOST_PARENT_COMMENT(state, comment) {
-      state.comment.uid = comment.uid
-      state.comment.parent_post_uid = comment.parent_post_uid
-      state.comment.submitter_id = comment.submitter_id
-      state.comment.submitter_name = comment.submitter_name
-      state.comment.time = comment.time
-      state.comment.content = comment.content
+    POST_COMMENT(state, comment) {
+      state.comments.push({
+      uid: comment.uid,
+      parent_post_uid: comment.parent_post_uid,
+      submitter_name: comment.submitter_name,
+      submitter_uid: comment.submitter_uid,
+      time: comment.time,
+      content: comment.content
+      })
     },
 
     POST_CHILD_COMMENT(state, comment) {
-      state.childComment.uid = comment.uid
-      state.childComment.parent_comment_uid = comment.parent_comment_uid
-      state.childComment.submitter_id = comment.submitter_id
-      state.childComment.submitter_name = comment.submitter_name
-      state.childComment.time = comment.time
-      state.childComment.content = comment.content
+      state.childComments.push({
+      uid: comment.uid,
+      parent_comment_uid: comment.comment_post_uid,
+      submitter_name: comment.submitter_name,
+      submitter_uid: comment.submitter_uid,
+      time: comment.time,
+      content: comment.content
+      })
+    },
 
-    }
+    LOAD_PARENT_COMMENTS(state, payload) {
+      state.rantParentComments.rant_uid = payload.uid
+      state.rantParentComments.rant_parent_comments = payload.comments
+    },
 
+    LOAD_CHILD_COMMENTS(state, payload) {
+      state.postChildrenComments.push({
+        comment_uid: payload.uid,
+        child_comments: payload.comments
+      })
+    },
+
+    
  
   },
   actions: {
@@ -264,49 +292,97 @@ export default new Vuex.Store({
       },
 
       postParentComment({commit}, comment) {
-        db.collection("comments.parents").add(
-          {
-            parent_post_uid: comment.parent_post_uid,
-            submitter_id: comment.submitter_uid,
-            submitter_name: comment.submitter_name,
+        db.collection("rants").doc(this.state.rant.uid).collection("comments").add(
+          {            
+            submitter_id: this.state.currentUser.uid,
+            submitter_name: this.state.currentUser.displayName,
             time: comment.time,
             content: comment.content
           }
         )
           .then(res => {
-            commit("POST_PARENT_COMMENT", 
+            commit("POST_COMMENT", 
             {
               uid: res.id,
-              parent_post_uid: comment.parent_post_uid,
-              submitter_id: comment.submitter_uid,
-              submitter_name: comment.submitter_name,
+              parent_post_uid: this.state.rant.uid,
+              submitter_id: this.state.currentUser.uid,
+              submitter_name: this.state.currentUser.displayName,
               time: comment.time,
               content: comment.content
             })
           })
       },
+
       postChildComment({commit}, comment) {
-        db.collection("comments.parents").add(
-          {
-            parent_comment_uid: comment.parent_comment_uid,
-            submitter_id: comment.submitter_uid,
-            submitter_name: comment.submitter_name,
+        db.collection("rants").doc(this.state.rant.uid).collection("comments")
+            .doc(comment.parent_comment_uid).collection("comments.children").add(
+          {            
+            submitter_id: this.state.currentUser.uid,
+            submitter_name: this.state.currentUser.displayName,
             time: comment.time,
-            content: comment.content
+            content: comment.content,
+            parent_comment_uid: comment.parent_comment_uid
           }
         )
           .then(res => {
-            commit("POST_PARENT_COMMENT", 
+            commit("POST_COMMENT", 
             {
               uid: res.id,
-              parent_comment_uid: comment.parent_comment_uid,
-              submitter_id: comment.submitter_uid,
-              submitter_name: comment.submitter_name,
+              parent_comment_uid: this.state.rant.uid,
+              submitter_id: this.state.currentUser.uid,
+              submitter_name: this.state.currentUser.displayName,
               time: comment.time,
               content: comment.content
             })
           })
+      },
+     
+      loadRantParentComments({commit}, id) {        
+        db.collection("rants").doc(id).collection('comments').get()
+              .then(snapshot => {
+                snapshot.forEach(doc => { 
+                  let data = doc.data()
+                  commit("POST_COMMENT", {
+                    uid: doc.id,
+                    parent_comment_uid: id,
+                    submitter_id: data.submitter_uid,
+                    submitter_name: data.submitter_name,
+                    time: data.time,
+                    content: data.content
+                  })                 
+                  
+                  
+                })
+              }).catch(e => console.log(e))
+              
+           
+      },
+
+      loadChildComments({commit}, id) {
+        let ret = []
+        db.collection("rants").doc(this.state.rant.uid).collection("comments")
+            .doc(id).collection("comments.children").get()
+              .then(snapshot => {
+                snapshot.forEach(doc => {
+                  let data = doc.data()
+                  ret.push({
+                    uid: data.id,
+                    parent_comment_uid: id,
+                    submitter_name: data.submitter_name,
+                    submitter_uid: data.submitter_uid,
+                    time: data.time,
+                    content: data.content    
+                  })
+                })
+              })
+
+              commit("LOAD_CHILD_COMMENTS", {
+                uid: id,
+                comments: ret
+              })
       }
+
+      
 
 
 
@@ -341,7 +417,14 @@ export default new Vuex.Store({
     },
     getSingleRant: state => {
       return state.rant
+    },
+    getRantParentComments: state => {
+      return state.comments
+    },
+    getChildComments: state => {
+      return state.postChildrenComments
     }
+    
 
   },
   modules: {

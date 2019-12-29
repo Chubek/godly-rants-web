@@ -34,6 +34,7 @@ export default {
     methods: {
         loadId() {
              this.$store.dispatch('loadRant', this.$route.params.id)
+             this.$store.dispatch('loadRantParentComments', this.$route.params.id)
         }        
     },
     computed: {
